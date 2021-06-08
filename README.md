@@ -2,7 +2,7 @@
 Lightweight Python Port Scanner
 
 ## Summary
-This tool is a lightweight port scanner which I created for fun, and practice Python programming. This tool is works well in network separated initial systems, or in a machine where you can't pivot.
+This tool is a lightweight port scanner which I created for fun, and practice Python programming. This tool works well in network separated systems, or in a machine where you can't pivot, or CTF machines.
 
 ## Usage
 
