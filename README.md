@@ -11,8 +11,8 @@ usage: pscan.py [-h] [-H HOST] [-p PORT] [-t THREADS] [-T TIMEOUT] [-o OUTPUT]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -H, --host HOST  	The host of the scan
-  -p, --port PORT  	The port (range)
+  -H, --host HOST  	    The host of the scan
+  -p, --port PORT  	    The port / range / ports
   -t, --threads THREADS	The scanning threads number
   -T, --timeout TIMEOUT The timeout value to wait for the connection
   -o, --output OUTPUT   The output file
