@@ -58,7 +58,7 @@ class pscan():
         """
         Get posts in an array from an input string
         if the return array length is 2 it contains a start address and an end address eg.: Range
-        else the result cvontains more than 2 items, it contains specific ports.
+        else the result cvontains more than 2 items, it contains specific ports, or a single port
         """
         res = []
         if '-' in inaddress:
@@ -68,7 +68,7 @@ class pscan():
             ports = inaddress.split(',')
             res = [int(p) for p in ports if p.isnumeric()] # get all integer from list
         else:
-            res = [int(p),int(p)]
+            res = [int(inaddress)]
         return res
     
     def _udp_scan(self):
@@ -152,28 +152,37 @@ def main():
         print("[!] Missing target host!")
         sys.exit(1)        
     if args.threads: scanner.thread_num = int(args.threads)
+    else:
+        scanner.thread_num = 1
     if args.timeout: scanner.timeout = int(args.timeout)
     # Parse the port range
     if args.port:
         r = scanner._get_port_range(args.port)
-        if len(r) == 2:
+        if len(r) == 1:
+            scanner.start_port = int(r[0])
+            scanner.end_port = int(r[0])
+            scanner.port_queue.put(scanner.start_port)
+            scanner.ports_count = 1
+        elif len(r) == 2:
             scanner.start_port = int(r[0])
             scanner.end_port = int(r[1])
             for p in range(scanner.start_port,scanner.end_port+1):
                 scanner.port_queue.put(p)
+            scanner.ports_count = scanner.port_queue.qsize()
             
         elif len(r) > 2:
             for p in r:
                 scanner.port_queue.put(p)
-        scanner.ports_count = scanner.port_queue.qsize()
+            scanner.ports_count = scanner.port_queue.qsize()
     else:
         for p in range(scanner.start_port,scanner.end_port+1):
             scanner.port_queue.put(p)
             scanner.ports_count = scanner.port_queue.qsize()
             
-    # If more threads than scanned ports, decrease the threads number to the number of the ports
-    if scanner.end_port-scanner.start_port < scanner.thread_num: scanner.thread_num = scanner.end_port - scanner.start_port
-            
+    if scanner.ports_count > 1:
+        # If more threads than scanned ports, decrease the threads number to the number of the ports
+        if scanner.end_port-scanner.start_port < scanner.thread_num: scanner.thread_num = scanner.end_port - scanner.start_port
+                
     if args.scantcp:
         scanner.scan_type = ScanType.TCP
         if args.scanudp: print("Only one Scan Type can set! Exit!"); sys.exit(1) 
